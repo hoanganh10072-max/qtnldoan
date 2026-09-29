@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | FPT HRM{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="breadcrumb-text">FPT HRM / Biểu mẫu</div><h1>{{ title }}</h1></div></div>
+<div class="card panel-card form-card"><div class="card-body">
+  <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+    <div class="row g-3">{% for field in form %}<div class="{% if field.field.widget.input_type == 'checkbox' %}col-12{% else %}col-md-6{% endif %}"><label class="form-label">{{ field.label }}{% if field.field.required %}<span class="text-danger"> *</span>{% endif %}</label>{{ field }}{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}{% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}</div>{% endfor %}</div>
+    <div class="form-actions"><a href="{% url cancel_url %}" class="btn btn-light">Quay lại</a><button class="btn btn-primary">Lưu dữ liệu</button></div>
+  </form>
+</div></div>
+{% endblock %}

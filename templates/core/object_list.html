@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | FPT HRM{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="breadcrumb-text">Danh mục / {{ title }}</div><h1>{{ title }}</h1></div><a class="btn btn-primary" href="{% url add_url %}">+ Thêm mới</a></div>
+<div class="card panel-card"><div class="card-body">
+  <form class="filter-bar" method="get"><input class="form-control" name="q" value="{{ q }}" placeholder="Tìm kiếm..."><button class="btn btn-outline-primary">Tìm kiếm</button></form>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr>
+  {% if kind == 'department' or kind == 'position' %}<th>Mã</th><th>Tên</th><th>Mô tả</th>{% endif %}
+  {% if kind == 'contract' %}<th>Số HĐ</th><th>Nhân viên</th><th>Loại</th><th>Thời hạn</th><th>Trạng thái</th>{% endif %}
+  {% if kind == 'job' %}<th>Vị trí</th><th>Phòng ban</th><th>Số lượng</th><th>Hạn tuyển</th><th>Trạng thái</th>{% endif %}
+  {% if kind == 'candidate' %}<th>Ứng viên</th><th>Vị trí</th><th>Liên hệ</th><th>Trạng thái</th>{% endif %}
+  {% if kind == 'user' %}<th>Tên đăng nhập</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th>{% endif %}
+  <th class="text-end">Thao tác</th></tr></thead><tbody>
+  {% for obj in page_obj %}<tr>
+    {% if kind == 'department' %}<td><span class="code-tag">{{ obj.code }}</span></td><td><a href="{% url 'department_detail' obj.pk %}"><strong>{{ obj.name }}</strong></a></td><td>{{ obj.description|truncatechars:55|default:'—' }}</td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'department_update' obj.pk %}">Sửa</a> {% if user.role == 'ADMIN' %}<a class="btn btn-sm btn-outline-danger" href="{% url 'department_delete' obj.pk %}">Xóa</a>{% endif %}</td>{% endif %}
+    {% if kind == 'position' %}<td><span class="code-tag">{{ obj.code }}</span></td><td><a href="{% url 'position_detail' obj.pk %}"><strong>{{ obj.name }}</strong></a></td><td>{{ obj.description|truncatechars:55|default:'—' }}</td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'position_update' obj.pk %}">Sửa</a> {% if user.role == 'ADMIN' %}<a class="btn btn-sm btn-outline-danger" href="{% url 'position_delete' obj.pk %}">Xóa</a>{% endif %}</td>{% endif %}
+    {% if kind == 'contract' %}<td><strong>{{ obj.contract_number }}</strong></td><td>{{ obj.employee.full_name }}</td><td>{{ obj.get_contract_type_display }}</td><td>{{ obj.start_date|date:'d/m/Y' }} – {{ obj.end_date|date:'d/m/Y'|default:'Không thời hạn' }}</td><td><span class="badge text-bg-success">{{ obj.get_status_display }}</span></td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'contract_update' obj.pk %}">Sửa</a></td>{% endif %}
+    {% if kind == 'job' %}<td><strong>{{ obj.title }}</strong></td><td>{{ obj.department.name }}</td><td>{{ obj.quantity }}</td><td>{{ obj.deadline|date:'d/m/Y' }}</td><td><span class="badge text-bg-{% if obj.status == 'OPEN' %}success{% else %}secondary{% endif %}">{{ obj.get_status_display }}</span></td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'job_update' obj.pk %}">Sửa</a> <a class="btn btn-sm btn-outline-danger" href="{% url 'job_delete' obj.pk %}">Xóa</a></td>{% endif %}
+    {% if kind == 'candidate' %}<td><strong>{{ obj.full_name }}</strong><small class="d-block text-muted">{{ obj.email }}</small></td><td>{{ obj.job_opening.title }}</td><td>{{ obj.phone }}</td><td><span class="badge text-bg-info">{{ obj.get_status_display }}</span></td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'candidate_update' obj.pk %}">Cập nhật</a>{% if obj.status == 'PASSED' and not obj.converted_employee_id %} <a class="btn btn-sm btn-success" href="{% url 'candidate_convert' obj.pk %}">Tiếp nhận</a>{% endif %}</td>{% endif %}
+    {% if kind == 'user' %}<td><strong>{{ obj.username }}</strong></td><td>{{ obj.get_full_name|default:'—' }}</td><td>{{ obj.email }}</td><td>{{ obj.get_role_display }}</td><td>{% if obj.is_active %}<span class="badge text-bg-success">Hoạt động</span>{% else %}<span class="badge text-bg-danger">Đã khóa</span>{% endif %}</td><td class="text-end"><a class="btn btn-sm btn-light" href="{% url 'user_update' obj.pk %}">Sửa</a></td>{% endif %}
+  </tr>{% empty %}<tr><td colspan="8" class="empty-state">Chưa có dữ liệu.</td></tr>{% endfor %}
+  </tbody></table></div>{% include 'core/_pagination.html' %}
+</div></div>
+{% endblock %}

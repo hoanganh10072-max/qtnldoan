@@ -1,0 +1,70 @@
+{% load static %}
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}FPT HRM{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+<aside class="sidebar">
+  <a class="brand" href="{% url 'dashboard' %}"><span>FPT</span> HRM<small>Quản trị nhân sự</small></a>
+  <nav>
+    <a href="{% url 'dashboard' %}">▦ <span>Tổng quan</span></a>
+    {% if user.role != 'EMPLOYEE' %}
+    <div class="nav-label">Cơ cấu tổ chức</div>
+    <a href="{% url 'department_list' %}">⌂ <span>Phòng ban</span></a>
+    <a href="{% url 'position_list' %}">♙ <span>Chức vụ</span></a>
+    <div class="nav-label">Nhân sự</div>
+    <a href="{% url 'employee_list' %}">♟ <span>Nhân viên</span></a>
+    <a href="{% url 'contract_list' %}">▤ <span>Hợp đồng</span></a>
+    <div class="nav-label">Tuyển dụng</div>
+    <a href="{% url 'job_list' %}">◎ <span>Vị trí tuyển dụng</span></a>
+    <a href="{% url 'candidate_list' %}">◉ <span>Ứng viên</span></a>
+    {% endif %}
+    <div class="nav-label">Chấm công</div>
+    <a href="{% url 'attendance_list' %}">◷ <span>Bảng chấm công</span></a>
+    <a href="{% url 'leave_list' %}">☂ <span>Nghỉ phép</span></a>
+    <div class="nav-label">Tiền lương</div>
+    {% if user.role != 'EMPLOYEE' %}<a href="{% url 'payroll_period_list' %}">₫ <span>Kỳ lương</span></a>{% endif %}
+    {% if user.role == 'EMPLOYEE' %}<a href="{% url 'my_payslips' %}">₫ <span>Phiếu lương của tôi</span></a>{% endif %}
+    {% if user.role != 'EMPLOYEE' %}
+    <a href="{% url 'transfer_list' %}">⇄ <span>Thuyên chuyển</span></a>
+    <a href="{% url 'reports' %}">▥ <span>Báo cáo</span></a>
+    {% endif %}
+    {% if user.role == 'ADMIN' %}<a href="{% url 'user_list' %}">⚙ <span>Tài khoản</span></a>{% endif %}
+  </nav>
+</aside>
+<main class="main-content">
+  <header class="topbar">
+    <button class="btn menu-toggle" type="button" aria-label="Mở menu">☰</button>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <div class="text-end"><strong>{{ user.get_full_name|default:user.username }}</strong><small class="d-block text-muted">{{ user.get_role_display }}</small></div>
+      <div class="dropdown">
+        <button class="avatar-btn dropdown-toggle" data-bs-toggle="dropdown">{{ user.username|slice:':1'|upper }}</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {% if current_employee %}<li><a class="dropdown-item" href="{% url 'employee_detail' current_employee.pk %}">Hồ sơ cá nhân</a></li>{% endif %}
+          <li><a class="dropdown-item" href="{% url 'password_change' %}">Đổi mật khẩu</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item text-danger">Đăng xuất</button></form></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+  <section class="page-wrap">
+{% else %}
+<main>
+{% endif %}
+    {% if messages %}{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">{{ message }}<button class="btn-close" data-bs-dismiss="alert"></button></div>{% endfor %}{% endif %}
+    {% block content %}{% endblock %}
+{% if user.is_authenticated %}</section>{% endif %}
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,2 @@
+{% extends 'base.html' %}
+{% block content %}<div class="page-heading"><h1>{{ title }}</h1></div><div class="card panel-card"><div class="card-body"><p>Bạn có chắc muốn thực hiện thao tác với <strong>{{ object }}</strong>?</p><form method="post">{% csrf_token %}<a href="javascript:history.back()" class="btn btn-light">Hủy</a><button class="btn btn-danger">Xác nhận</button></form></div></div>{% endblock %}

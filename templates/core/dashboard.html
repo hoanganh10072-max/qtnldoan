@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Tổng quan | FPT HRM{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="breadcrumb-text">Trang chủ / Tổng quan</div><h1>Trang tổng quan</h1><p>Tình hình nhân sự cập nhật đến hôm nay.</p></div><div class="date-chip">{% now 'd/m/Y' %}</div></div>
+<div class="stats-grid">
+  <div class="stat-card orange"><span>Tổng nhân viên</span><strong>{{ stats.total }}</strong><small>Toàn hệ thống</small></div>
+  <div class="stat-card green"><span>Đang làm việc</span><strong>{{ stats.active }}</strong><small>Nhân sự hiện tại</small></div>
+  <div class="stat-card blue"><span>Nhân viên mới</span><strong>{{ stats.new }}</strong><small>Trong tháng này</small></div>
+  <div class="stat-card gray"><span>Đã nghỉ việc</span><strong>{{ stats.resigned }}</strong><small>Lũy kế</small></div>
+  <div class="stat-card amber"><span>Đơn nghỉ chờ duyệt</span><strong>{{ stats.pending_leave }}</strong><small>Cần xử lý</small></div>
+  <div class="stat-card purple"><span>Vị trí đang tuyển</span><strong>{{ stats.open_jobs }}</strong><small>Tuyển dụng</small></div>
+  <div class="stat-card teal"><span>Quỹ lương tháng</span><strong>{{ stats.payroll_total|floatformat:0 }} ₫</strong><small>Công thức mô phỏng</small></div>
+  <div class="stat-card red"><span>HĐ sắp hết hạn</span><strong>{{ stats.expiring_contracts }}</strong><small>Trong 30 ngày</small></div>
+</div>
+<div class="chart-grid mt-4">
+  <div class="card panel-card"><div class="card-header">Nhân viên theo phòng ban</div><div class="card-body chart-box"><canvas id="deptChart"></canvas></div></div>
+  <div class="card panel-card"><div class="card-header">Cơ cấu giới tính</div><div class="card-body chart-box"><canvas id="genderChart"></canvas></div></div>
+  <div class="card panel-card"><div class="card-header">Biến động nhân sự 6 tháng</div><div class="card-body chart-box"><canvas id="movementChart"></canvas></div></div>
+  <div class="card panel-card"><div class="card-header">Chi phí lương theo phòng ban</div><div class="card-body chart-box"><canvas id="salaryChart"></canvas></div></div>
+</div>
+{{ charts|json_script:'charts-data' }}
+{% endblock %}
+{% block scripts %}<script>window.renderDashboardCharts(JSON.parse(document.getElementById('charts-data').textContent));</script>{% endblock %}

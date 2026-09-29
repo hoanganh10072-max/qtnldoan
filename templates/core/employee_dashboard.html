@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Không gian cá nhân | FPT HRM{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="breadcrumb-text">Trang chủ / Không gian cá nhân</div><h1>Xin chào, {{ employee.full_name }}</h1><p>Theo dõi hồ sơ, công, phép và lương của riêng bạn.</p></div><div class="date-chip">{% now 'd/m/Y' %}</div></div>
+<div class="stats-grid">
+  <div class="stat-card orange"><span>Mã nhân viên</span><strong>{{ employee.employee_code }}</strong><small>{{ employee.department.name }}</small></div>
+  <div class="stat-card green"><span>Ngày chấm công</span><strong>{{ attendance_count }}</strong><small>Trong tháng hiện tại</small></div>
+  <div class="stat-card amber"><span>Đơn nghỉ chờ duyệt</span><strong>{{ pending_leave }}</strong><small>Đơn của bạn</small></div>
+  <div class="stat-card teal"><span>Lương kỳ gần nhất</span><strong>{% if latest_payroll %}{{ latest_payroll.net_salary|floatformat:0 }} ₫{% else %}—{% endif %}</strong><small>{% if latest_payroll %}{{ latest_payroll.period }}{% else %}Chưa có phiếu lương{% endif %}</small></div>
+</div>
+<div class="card panel-card mt-4"><div class="card-header">Thao tác nhanh</div><div class="card-body d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" href="{% url 'employee_detail' employee.pk %}">Xem hồ sơ</a><a class="btn btn-outline-primary" href="{% url 'attendance_list' %}">Chấm công</a><a class="btn btn-outline-primary" href="{% url 'leave_create' %}">Gửi đơn nghỉ</a><a class="btn btn-outline-primary" href="{% url 'my_payslips' %}">Xem phiếu lương</a></div></div>
+{% endblock %}
